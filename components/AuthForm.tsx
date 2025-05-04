@@ -12,6 +12,10 @@ import {toast} from "sonner";
 import FormField from "@/components/FormField";
 import {useRouter} from "next/navigation";
 
+import {auth} from "@/firebase/client";
+import {signIn, signUp} from "@/lib/actions/auth.action";
+import {AuthErrorCodes, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
+
 const authFormSchema = (type: FormType) => z.object({
     name: type === 'sign-up' ? z.string().min(3) : z.string().optional(),
     email: z.string().email(),
@@ -32,19 +36,81 @@ const AuthForm = ({type}: { type: FormType }) => {
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            // TODO: Need to remove the below log
             console.log(type.toUpperCase(), values);
-            if(type === "sign-up") {
-                toast.success("Signup successfully");
+            if (type === "sign-up") {
+                const {name, email, password} = values;
+
+                const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+
+                const result = await signUp({
+                    uid: userCredentials.user.uid,
+                    name: name!,
+                    email: email,
+                    password: password // Password is not even necessary to be sent here
+                });
+
+                if (!result?.success) {
+                    toast.error(result?.message);
+                    return;
+                }
+
+                toast.success("Account created successfully. Please sign in");
                 router.push("/sign-in");
-            } else if(type === "sign-in") {
+            } else if (type === "sign-in") {
+
+                const {email, password} = values;
+
+                const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+
+                const idToken = await userCredentials.user.getIdToken();
+
+                if (!idToken) {
+                    toast.error('Sign in failed');
+                    return;
+                }
+
+                await signIn({
+                    idToken, email
+                });
+
                 toast.success("Account created successfully");
                 router.push("/");
             }
         } catch (error) {
-            console.error(error);
-            toast.error(`There was an error: ${error}`);
+            // Handling different Firebase auth errors
+            if (typeof error === 'object' && error != null && 'code' in error) {
+                switch (error.code) {
+                    case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
+                        console.log("Invalid login credentials. Please try again");
+                        toast.error("Invalid login credentials. Please try again");
+                        break;
+                    case AuthErrorCodes.INVALID_EMAIL:
+                        console.error("Invalid email format. Please check your email.");
+                        toast.error("Invalid email format. Please check your email.");
+                        break;
+                    case AuthErrorCodes.INVALID_PASSWORD:
+                        console.error("Incorrect password. Please try again.");
+                        toast.error("Invalid password. Please try again.");
+                        break;
+                    case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+                        console.error("Too many failed login attempts. Please wait and try again later.");
+                        toast.error("Too many failed login attempts. Please try again.");
+                        break;
+                    case AuthErrorCodes.EMAIL_EXISTS:
+                        console.error('Email already exists. Please check your email or try to log in');
+                        toast.error("Email already exists. Please check your email or try to log in.");
+                        break;
+                    default:
+                        console.error("Authentication failed:", error);
+                        toast.error(`Authentication failed: Something went wrong.`);
+                }
+            } else {
+                console.error("Authentication failed:", error);
+                toast.error(`Authentication failed: Something went wrong.`);
+            }
         }
     }
 
