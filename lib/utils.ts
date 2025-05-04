@@ -32,14 +32,12 @@ export const getTechLogos = async (techArray: string[]) => {
         };
     });
 
-    const results = await Promise.all(
+    return await Promise.all(
         logoURLs.map(async ({tech, url}) => ({
             tech,
             url: (await checkIconExists(url)) ? url : "/tech.svg",
         }))
     );
-
-    return results;
 };
 
 export const getRandomInterviewCover = () => {

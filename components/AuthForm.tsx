@@ -76,7 +76,7 @@ const AuthForm = ({type}: { type: FormType }) => {
                     idToken, email
                 });
 
-                toast.success("Account created successfully");
+                toast.success("Account Signed In successfully");
                 router.push("/");
             }
         } catch (error) {
