@@ -1,0 +1,15 @@
+### API Endpoint for vapi generate
+GET http://localhost:3000/api/vapi/generate
+
+### Generate Interview Questions
+POST http://localhost:3000/api/vapi/generate
+Content-Type: application/json
+
+{
+  "type": "mixed",
+  "role": "frontend",
+  "level": "senior",
+  "techstack": "next.js",
+  "amount": "7",
+  "userid": "536hRwFea9NOkZkkLW4vlYfMqo32"
+}

@@ -27,6 +27,9 @@ export async function signUp(params: SignUpParams) {
             success: true,
             message: `Account created successfully.`,
         }
+
+        // TODO: Remove below suppression comment
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) { // TODO: Replace `any` with another correct type
         console.error('Error creating user', e);
 
@@ -113,6 +116,8 @@ export async function getCurrentUser(): Promise<User | null> {
             id: userRecord.id,
         } as User;
 
+        // TODO: Remove below suppression comment
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         console.error('Error getting current user', e);
 

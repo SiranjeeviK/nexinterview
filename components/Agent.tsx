@@ -12,7 +12,8 @@ enum CallStatus {
     FINISHED = "FINISHED",
 }
 
-
+// TODO: Remove below suppression comment
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: AgentProps) => {
     const isSpeaking = true;
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
