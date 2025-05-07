@@ -97,6 +97,9 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
+// TODO: Remove below suppression comment
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:
