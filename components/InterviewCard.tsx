@@ -8,7 +8,7 @@ import DisplayTechIcons from "@/components/DisplayTechIcons";
 
 // TODO: Remove below suppression comment
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: InterviewCardProps) => {
+const InterviewCard = ({id, userId, role, type, techstack, createdAt}: InterviewCardProps) => {
     const feedback = null as Feedback | null;
     const normalizedType = /mix/gi.test(type) ? 'Mixed' : type;
     const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now()).format('MMM D, YYYY');
@@ -62,7 +62,7 @@ const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: 
                     <DisplayTechIcons techStack={techstack}/>
                     <Button className="btn-primary" asChild>
                         <Link
-                            href={feedback ? `/interview/${interviewId}/feedback` : `/app/(root)/interview/${interviewId}`}>
+                            href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}>
                             {feedback ? 'Check Feedback' : 'View Interview'}
                         </Link>
                     </Button>
