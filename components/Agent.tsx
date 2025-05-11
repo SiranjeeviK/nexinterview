@@ -74,7 +74,7 @@ const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => 
         });
 
         if (success && id) {
-            router.push(`/interview/${id}/feedback`);
+            router.push(`/mock-interview/${id}/feedback`);
         } else {
             console.log('Error saving feedback');
             router.push('/');

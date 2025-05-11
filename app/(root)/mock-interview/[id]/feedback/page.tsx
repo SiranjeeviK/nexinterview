@@ -111,7 +111,7 @@ const Page = async ({params}: RouteParams) => {
                 </Button>
 
                 <Button className="btn-primary">
-                    <Link href={`/interview/${interviewId}`} className="flex w-full justify-center">
+                    <Link href={`/mock-interview/${interviewId}`} className="flex w-full justify-center">
                         <p className="text-sm font-semibold text-center text-secondary">Retake Interview</p>
                     </Link>
                 </Button>
