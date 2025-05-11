@@ -1,11 +1,12 @@
 'use client';
 
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import Image from "next/image";
 import {cn} from "@/lib/utils";
 import {useRouter} from "next/navigation";
 import {vapi} from '@/lib/vapi.sdk'
 import {interviewer} from "@/constants";
+import {createFeedback} from "@/lib/actions/general.action";
 
 
 enum CallStatus {
@@ -20,9 +21,7 @@ interface SavedMessage {
     content: string;
 }
 
-// TODO: Remove below suppression comment
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: AgentProps) => {
+const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => {
     const router = useRouter();
 
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -67,14 +66,12 @@ const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: Age
     }, [])
 
 
-    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-        console.log('Generated feedback here.');
-
-        // TODO: Create a server action that generate the feedback
-        const {success, id} = {
-            success: true,
-            id: 'feedback-id',
-        }
+    const handleGenerateFeedback = useCallback(async (messages: SavedMessage[]) => {
+        const {success, feedbackId: id} = await createFeedback({
+            transcript: messages,
+            userId: userId!,
+            interviewId: interviewId!
+        });
 
         if (success && id) {
             router.push(`/interview/${id}/feedback`);
@@ -83,7 +80,8 @@ const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: Age
             router.push('/');
         }
 
-    };
+    }, [userId, interviewId, router]);
+
     useEffect(() => {
         if (callStatus === CallStatus.FINISHED) {
             if (type === 'generate') {
@@ -93,7 +91,7 @@ const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: Age
             }
 
         }
-    }, [messages, callStatus, type, userId]);
+    }, [messages, callStatus, type, userId, handleGenerateFeedback, router]);
 
     const handleCall = async () => {
         setCallStatus(CallStatus.CONNECTING);
@@ -117,7 +115,9 @@ const Agent = ({userName, type, userId, questions, interviewId, feedbackId}: Age
             await vapi.start(interviewer, {
                 variableValues: {
                     questions: formattedQuestions
-                }
+                },
+                clientMessages: [],
+                serverMessages: []
             })
         }
     };
