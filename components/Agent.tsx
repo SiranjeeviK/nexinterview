@@ -135,7 +135,9 @@ const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => 
 
     return (
         <>
+            {/* Call View */}
             <div className={"call-view"}>
+                {/* AI Interviewer Card*/}
                 <div className={"card-interviewer"}>
                     <div className={"avatar"}>
                         <Image alt={"vapi"} src={"/ai-avatar.png"} width={65} height={54} className={"object-cover"}/>
@@ -144,7 +146,7 @@ const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => 
                     <h3>AI Interviewer</h3>
                 </div>
 
-
+                {/* User Card*/}
                 <div className={"card-border"}>
                     <div className={"card-content"}>
                         <Image alt={"user avatar"} src={getGravatarUrl(userName)} width={540} height={540}

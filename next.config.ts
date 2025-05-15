@@ -2,7 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["www.gravatar.com"],
+    remotePatterns: [{
+      protocol: "https",
+      hostname: "www.gravatar.com",
+      // port: "",
+      // pathname: "/avatar/**",
+    }],
   },
 };
 

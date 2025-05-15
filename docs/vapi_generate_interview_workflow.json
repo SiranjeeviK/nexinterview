@@ -1,0 +1,171 @@
+{
+    "name": "Nex-Interview",
+    "nodes": [
+      {
+        "name": "start_node",
+        "type": "start",
+        "metadata": {
+          "position": {
+            "x": 146.83477020263672,
+            "y": 102.93491268157959
+          }
+        }
+      },
+      {
+        "name": "say",
+        "type": "say",
+        "metadata": {
+          "position": {
+            "x": 45.83477020263672,
+            "y": 246.45242881774902
+          }
+        },
+        "prompt": "",
+        "exact": "Hello, {{ username }}! Let's prepare your interview. I'll ask you a few questions and generate a perfect interview just for you. Are you ready?"
+      },
+      {
+        "name": "node_1746614797067",
+        "type": "gather",
+        "metadata": {
+          "position": {
+            "x": 45.83477020263672,
+            "y": 516.8961009979248
+          }
+        },
+        "output": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "type": "string",
+              "description": "What role would you like to train for?"
+            },
+            "type": {
+              "type": "string",
+              "description": "Are you aiming for a technical, behavioral or mixed interview?"
+            },
+            "level": {
+              "type": "string",
+              "description": "The job experience level"
+            },
+            "techstack": {
+              "type": "string",
+              "description": "A list of technologies to cover during the job interview."
+            },
+            "amount": {
+              "type": "string",
+              "description": "How many questions would you like me to prepare for you"
+            }
+          },
+          "required": [
+            "role",
+            "type",
+            "level",
+            "techstack",
+            "amount"
+          ]
+        },
+        "hooks": []
+      },
+      {
+        "name": "node_1746615157249",
+        "type": "apiRequest",
+        "metadata": {
+          "position": {
+            "x": 45.83477020263672,
+            "y": 740.7852001190186
+          }
+        },
+        "method": "POST",
+        "url": "https://nexinterview.vercel.app/api/vapi/generate",
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "type": "string",
+              "description": "",
+              "value": "{{ role }}"
+            },
+            "type": {
+              "type": "string",
+              "description": "",
+              "value": "{{ type }}"
+            },
+            "level": {
+              "type": "string",
+              "description": "",
+              "value": "{{ level }}"
+            },
+            "techstack": {
+              "type": "string",
+              "description": "",
+              "value": "{{ techstack }}"
+            },
+            "amount": {
+              "type": "string",
+              "description": "",
+              "value": "{{ amount }}"
+            },
+            "userid": {
+              "type": "string",
+              "description": "",
+              "value": "{{ userid }}"
+            }
+          }
+        },
+        "output": {
+          "type": "object",
+          "properties": {}
+        },
+        "mode": "blocking",
+        "hooks": []
+      },
+      {
+        "name": "node_1746615388977",
+        "type": "say",
+        "metadata": {
+          "position": {
+            "x": 45.83477020263672,
+            "y": 1028.8474445343018
+          }
+        },
+        "prompt": "Say that the interview has been generated and thank the user for the call.",
+        "exact": ""
+      },
+      {
+        "name": "node_1746615469722",
+        "type": "hangup",
+        "metadata": {
+          "position": {
+            "x": 138.83477020263672,
+            "y": 1278.8165550231934
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "start_node",
+        "to": "say"
+      },
+      {
+        "from": "say",
+        "to": "node_1746614797067"
+      },
+      {
+        "from": "node_1746614797067",
+        "to": "node_1746615157249"
+      },
+      {
+        "from": "node_1746615157249",
+        "to": "node_1746615388977"
+      },
+      {
+        "from": "node_1746615388977",
+        "to": "node_1746615469722"
+      }
+    ]
+  }
