@@ -52,6 +52,29 @@ NexInterview is an AI-powered platform designed to help users prepare for job in
     -   The feedback is stored in Firestore.
     -   The user is redirected to a page where they can review their feedback.
 
+---
+
+## Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A[User signs up / logs in] --> B[User starts interview generation]
+    B --> C[VAPI Assistant 1 collects preferences]
+    C --> D[POST /api/vapi/generate]
+    D --> E[Google Gemini generates questions]
+    E --> F[Questions saved to Firestore]
+    F --> G[User starts mock interview]
+    G --> H["VAPI Assistant 2 (AI Interviewer) asks questions"]
+    H --> I[User answers via voice]
+    I --> J[Conversation transcript captured]
+    J --> K[Transcript sent to backend for feedback]
+    K --> L[Google Gemini analyzes & generates feedback]
+    L --> M[Feedback saved to Firestore]
+    M --> N[User reviews feedback]
+```
+
+---
+
 ## Environment Variables
 
 To run this project, you will need to set up the following environment variables in a `.env.local` file. Refer to `env.example` for a template:
