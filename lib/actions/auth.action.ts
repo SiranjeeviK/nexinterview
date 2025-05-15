@@ -134,4 +134,12 @@ export async function isAuthenticated(): Promise<boolean> {
     return !!user;
 }
 
+export async function signOutServer() {
+    const cookieStore = await cookies();
+    cookieStore.set('session', '', {
+        maxAge: -1,
+        path: '/',
+    });
+}
+
 

@@ -7,6 +7,7 @@ import {useRouter} from "next/navigation";
 import {vapi} from '@/lib/vapi.sdk'
 import {interviewer} from "@/constants";
 import {createFeedback} from "@/lib/actions/general.action";
+import { getGravatarUrl } from "@/lib/utils/gravatar";
 
 
 enum CallStatus {
@@ -146,8 +147,8 @@ const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => 
 
                 <div className={"card-border"}>
                     <div className={"card-content"}>
-                        <Image alt={"user avatar"} src={"/user-avatar.png"} width={540} height={540}
-                               className={"rounded-full object-cover size-[120px]"}/>
+                        <Image alt={"user avatar"} src={getGravatarUrl(userName)} width={540} height={540}
+                               className={"rounded-full object-cover size-[120px]"} onError={(e) => { (e.target as HTMLImageElement).src = "/user-avatar.svg"; }} />
                         <h3>{userName}</h3>
                     </div>
                 </div>
