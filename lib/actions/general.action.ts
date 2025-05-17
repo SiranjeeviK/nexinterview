@@ -48,11 +48,17 @@ export async function getInterviewsById(id: string): Promise<Interview | null> {
 
 export async function createFeedback(params: CreateFeedbackParams) {
     const {interviewId, userId, transcript} = params;
-
+    console.log('[server actions] Creating feedback for', {
+        transcript,
+        userId,
+        interviewId
+    });
     try {
         const formattedTranscript = transcript.map((sentence: { role: string, content: string }) => (
             `- ${sentence.role}: ${sentence.content}\n`
         )).join('');
+
+        console.log('[server actions] Formatted transcript', formattedTranscript);
 
         const {
             object: {
@@ -115,6 +121,7 @@ export async function getFeedbackByInterviewId(params: GetFeedbackByInterviewIdP
         .collection('feedback')
         .where('interviewId', "==", interviewId)
         .where("userId", "==", userId)
+        .orderBy('createdAt', 'desc')
         .limit(1)
         .get();
 

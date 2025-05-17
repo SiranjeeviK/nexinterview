@@ -1,12 +1,12 @@
 'use client';
 
-import {useCallback, useEffect, useState} from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Image from "next/image";
-import {cn} from "@/lib/utils";
-import {useRouter} from "next/navigation";
-import {vapi} from '@/lib/vapi.sdk'
-import {interviewer} from "@/constants";
-import {createFeedback} from "@/lib/actions/general.action";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { vapi } from '@/lib/vapi.sdk'
+import { interviewer } from "@/constants";
+import { createFeedback } from "@/lib/actions/general.action";
 import { getGravatarUrl } from "@/lib/utils/gravatar";
 
 
@@ -22,10 +22,11 @@ interface SavedMessage {
     content: string;
 }
 
-const Agent = ({userName, userEmail, type, userId, questions, interviewId}: AgentProps) => {
+const Agent = ({ userName, userEmail, type, userId, questions, interviewId }: AgentProps) => {
     const router = useRouter();
 
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isCancelled, setIsCancelled] = useState(false);
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [messages, setMessages] = useState<SavedMessage[]>([]);
 
@@ -35,7 +36,7 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
 
         const onMessage = (message: Message) => {
             if (message.type === 'transcript' && message.transcriptType === 'final') {
-                const newMessage = {role: message.role, content: message.transcript};
+                const newMessage = { role: message.role, content: message.transcript };
 
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
             }
@@ -68,7 +69,7 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
 
 
     const handleGenerateFeedback = useCallback(async (messages: SavedMessage[]) => {
-        const {success, feedbackId: id} = await createFeedback({
+        const { success, feedbackId: id } = await createFeedback({
             transcript: messages,
             userId: userId!,
             interviewId: interviewId!
@@ -88,11 +89,18 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
             if (type === 'generate') {
                 router.push('/'); // Since it takes some time to generate interview, we are routing them to home page to buy some time
             } else {
+                if (isCancelled) {
+                    console.log('Cancelled')
+                    return;
+                }
+                console.log('Generating feedback');
+                console.log(messages)
                 handleGenerateFeedback(messages);
+
             }
 
         }
-    }, [messages, callStatus, type, userId, handleGenerateFeedback, router]);
+    }, [messages, callStatus, type, userId, handleGenerateFeedback, router, isCancelled]);
 
     const handleCall = async () => {
         setCallStatus(CallStatus.CONNECTING);
@@ -113,6 +121,7 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
                 formattedQuestions = questions.map(question => `- ${question}`).join('\n');
             }
 
+            // @ts-expect-error - Suppressing interviewer warning
             await vapi.start(interviewer, {
                 variableValues: {
                     questions: formattedQuestions
@@ -122,6 +131,11 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
             })
         }
     };
+
+    const handleCancel = () => {
+        setIsCancelled(true);
+        handleDisconnect();
+    }
 
     const handleDisconnect = async () => {
         setCallStatus(CallStatus.FINISHED);
@@ -140,8 +154,8 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
                 {/* AI Interviewer Card*/}
                 <div className={"card-interviewer"}>
                     <div className={"avatar"}>
-                        <Image alt={"vapi"} src={"/ai-avatar.png"} width={65} height={54} className={"object-cover"}/>
-                        {isSpeaking && <span className={"animate-speak"}/>}
+                        <Image alt={"vapi"} src={"/ai-avatar.png"} width={65} height={54} className={"object-cover"} />
+                        {isSpeaking && <span className={"animate-speak"} />}
                     </div>
                     <h3>AI Interviewer</h3>
                 </div>
@@ -150,7 +164,7 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
                 <div className={"card-border"}>
                     <div className={"card-content"}>
                         <Image alt={"user avatar"} src={getGravatarUrl(userEmail!)} width={540} height={540}
-                               className={"rounded-full object-cover size-[120px]"} onError={(e) => { (e.target as HTMLImageElement).src = "/user-avatar.svg"; }} />
+                            className={"rounded-full object-cover size-[120px]"} onError={(e) => { (e.target as HTMLImageElement).src = "/user-avatar.svg"; }} />
                         <h3>{userName}</h3>
                     </div>
                 </div>
@@ -160,25 +174,27 @@ const Agent = ({userName, userEmail, type, userId, questions, interviewId}: Agen
                 <div className={"transcript-border"}>
                     <div className={"transcript"}>
                         <p key={latestMessage}
-                           className={cn('transition-opacity duration-500 opacity-0', 'animate-fadeIn opacity-100')}>
+                            className={cn('transition-opacity duration-500 opacity-0', 'animate-fadeIn opacity-100')}>
                             {latestMessage}
                         </p>
                     </div>
                 </div>
             )}
 
-            <div className={'w- flex justify-center'}>
+            <div className={'w-full flex justify-center'}>
                 {callStatus !== 'ACTIVE' ? (
                     <button className={"relative btn-call"} onClick={handleCall}>
                         <span
-                            className={cn("absolute animate-ping rounded-full opacity-75", callStatus !== 'CONNECTING' && 'hidden')}/>
+                            className={cn("absolute animate-ping rounded-full opacity-75", callStatus !== 'CONNECTING' && 'hidden')} />
 
                         <span>{isCallInactiveOrFinished ? 'Call' : '. . .'}</span>
                     </button>
-                ) : (
+                ) : (<div className={'flex gap-2'}>
+                    <button className={'btn-cancel'} onClick={handleCancel}>Cancel</button>
                     <button className={'btn-disconnect'} onClick={handleDisconnect}>
                         End
                     </button>
+                </div>
                 )}
             </div>
         </>)

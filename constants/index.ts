@@ -97,7 +97,9 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
-export const interviewer: CreateAssistantDTO = {
+export const interviewer: CreateAssistantDTO | {
+  clientMessages: string[];
+} = {
   name: "Interviewer",
   firstMessage: "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
   transcriber: {
@@ -152,8 +154,8 @@ End the conversation on a polite and positive note.
       },
     ],
   },
-  clientMessages: [],
-  serverMessages: []
+  clientMessages: ["transcript"],
+  serverMessages:[]
 };
 
 export const feedbackSchema = z.object({
