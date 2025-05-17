@@ -7,7 +7,7 @@ const InterviewPage = async () => {
     return (
         <>
             <h3>Interview Generation</h3>
-            <Agent userName={user?.name ?? "You"} userId={user?.id} type={"generate"}/>
+            <Agent userName={user?.name ?? "You"} userEmail={user?.email} userId={user?.id} type={"generate"}/>
         </>
     )
 }

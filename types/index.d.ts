@@ -49,6 +49,7 @@ interface InterviewCardProps {
 
 interface AgentProps {
   userName: string;
+  userEmail?: string;
   userId?: string;
   interviewId?: string;
   feedbackId?: string;

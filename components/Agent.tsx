@@ -22,7 +22,7 @@ interface SavedMessage {
     content: string;
 }
 
-const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => {
+const Agent = ({userName, userEmail, type, userId, questions, interviewId}: AgentProps) => {
     const router = useRouter();
 
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -149,7 +149,7 @@ const Agent = ({userName, type, userId, questions, interviewId}: AgentProps) => 
                 {/* User Card*/}
                 <div className={"card-border"}>
                     <div className={"card-content"}>
-                        <Image alt={"user avatar"} src={getGravatarUrl(userName)} width={540} height={540}
+                        <Image alt={"user avatar"} src={getGravatarUrl(userEmail!)} width={540} height={540}
                                className={"rounded-full object-cover size-[120px]"} onError={(e) => { (e.target as HTMLImageElement).src = "/user-avatar.svg"; }} />
                         <h3>{userName}</h3>
                     </div>
